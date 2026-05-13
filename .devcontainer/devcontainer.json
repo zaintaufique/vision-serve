@@ -10,7 +10,7 @@
         "charliermarsh.ruff"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/workspaces/.venv/bin/python"
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
       }
     }
   }
