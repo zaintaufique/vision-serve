@@ -1,7 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "vision-serve"
 version = "0.1.0"
 description = "Production-grade inference service for deep neural networks."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi>=0.136.1",
+    "uvicorn[standard]>=0.47.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vision_serve"]
