@@ -15,3 +15,27 @@ dependencies = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vision_serve"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.13",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes (unused imports, undefined names, etc.)
+    "I",      # isort (import sorting)
+    "B",      # bugbear (likely bugs)
+    "UP",     # pyupgrade (modernize syntax)
+    "SIM",    # simplifications
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
