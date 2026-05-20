@@ -11,7 +11,8 @@ import torch
 from torchvision.models import ResNet18_Weights, resnet18
 
 # Where to write the ONNX file (relative to the project root).
-OUTPUT_PATH = Path("models/resnet18.onnx")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+OUTPUT_PATH = PROJECT_ROOT / "models" / "resnet18.onnx"
 
 
 def export() -> Path:
