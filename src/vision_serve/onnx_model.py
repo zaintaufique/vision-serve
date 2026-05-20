@@ -15,7 +15,9 @@ from PIL import Image
 from torchvision.models import ResNet18_Weights
 
 # Default path the export script writes to. Override via constructor if needed.
-DEFAULT_MODEL_PATH = Path("models/resnet18.onnx")
+# Project root is two levels up from this file (src/vision_serve/onnx_model.py).
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+DEFAULT_MODEL_PATH = PROJECT_ROOT / "models" / "resnet18.onnx"
 
 
 class OnnxModel:
