@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Protocol
+from typing import Annotated, Protocol
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -78,7 +78,10 @@ def healthz() -> HealthResponse:
 
 
 @app.post("/predict", response_model=PredictResponse)
-async def predict(file: UploadFile = File(...), top_k: int = 5) -> PredictResponse:
+async def predict(
+    file: Annotated[UploadFile, File(...)],
+    top_k: int = 5,
+) -> PredictResponse:
     """Classify an uploaded image. Returns the top-K predictions."""
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image.")
