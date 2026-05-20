@@ -26,3 +26,10 @@ venv/
 dist/
 build/
 *.egg
+
+# ML model artifacts (generated, not source)
+models/
+*.onnx
+*.pt
+*.pth
+*.safetensors
