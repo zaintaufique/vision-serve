@@ -1,5 +1,7 @@
 # vision-serve
 
+[![CI](https://github.com/zaintaufique/vision-serve/actions/workflows/ci.yml/badge.svg)](https://github.com/zaintaufique/vision-serve/actions/workflows/ci.yml)
+
 A production-grade inference service for deep neural networks, built from scratch as part of a transition into ML/AI engineering.
 
 🚧 **Work in progress.** See commit history for development log.
