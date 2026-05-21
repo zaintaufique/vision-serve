@@ -34,3 +34,5 @@ jobs:
 
       - name: Run pytest
         run: uv run pytest
+
+# CI runs ruff, format check, and pytest
