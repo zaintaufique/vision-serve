@@ -32,5 +32,4 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Run pytest
-        run: uv run pytests
-        
+        run: uv run pytest
