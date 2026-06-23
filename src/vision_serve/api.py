@@ -10,8 +10,8 @@ from typing import Annotated, Protocol
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
-from vision_serve.model import Model
-from vision_serve.onnx_model import OnnxModel
+# from vision_serve.model import Model
+# from vision_serve.onnx_model import OnnxModel
 
 
 class InferenceBackend(Protocol):
@@ -20,12 +20,31 @@ class InferenceBackend(Protocol):
     def predict(self, image_bytes: bytes, top_k: int = 5) -> list[dict[str, float | str]]: ...
 
 
+# def _select_backend() -> InferenceBackend:
+#     """Pick the inference backend based on the VISION_SERVE_BACKEND env var."""
+#     name = os.getenv("VISION_SERVE_BACKEND", "pytorch").lower()
+#     if name == "pytorch":
+#         return Model()
+#     if name == "onnx":
+#         return OnnxModel()
+#     raise ValueError(f"Unknown VISION_SERVE_BACKEND={name!r}. Use 'pytorch' or 'onnx'.")
+
+
 def _select_backend() -> InferenceBackend:
-    """Pick the inference backend based on the VISION_SERVE_BACKEND env var."""
+    """Pick the inference backend based on the VISION_SERVE_BACKEND env var.
+
+    Imports are done lazily inside each branch so a deployment that only
+    installs one backend's dependencies (e.g. the ONNX-only production
+    image, which has no torch) never imports the other backend's modules.
+    """
     name = os.getenv("VISION_SERVE_BACKEND", "pytorch").lower()
     if name == "pytorch":
+        from vision_serve.model import Model
+
         return Model()
     if name == "onnx":
+        from vision_serve.onnx_model import OnnxModel
+
         return OnnxModel()
     raise ValueError(f"Unknown VISION_SERVE_BACKEND={name!r}. Use 'pytorch' or 'onnx'.")
 

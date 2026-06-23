@@ -1,23 +1,29 @@
-"""ONNX Runtime-based image classification.
+"""ONNX Runtime-based image classification (torch-free).
 
 Mirrors the interface of `Model` (PyTorch) so they're swappable behind a
-common backend protocol.
+common backend protocol. Imports only onnxruntime, numpy, and pillow —
+never torch — so it can ship in a slim production image.
 """
 
 from __future__ import annotations
 
-import io
 from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
-from PIL import Image
-from torchvision.models import ResNet18_Weights
 
-# Default path the export script writes to. Override via constructor if needed.
+from vision_serve.preprocessing import preprocess
+
 # Project root is two levels up from this file (src/vision_serve/onnx_model.py).
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_MODEL_PATH = PROJECT_ROOT / "models" / "resnet18.onnx"
+CLASSES_PATH = Path(__file__).resolve().parent / "imagenet_classes.txt"
+
+
+def _load_categories() -> list[str]:
+    """Read the 1000 ImageNet class names, one per line."""
+    text = CLASSES_PATH.read_text(encoding="utf-8")
+    return [line.strip() for line in text.splitlines() if line.strip()]
 
 
 class OnnxModel:
@@ -31,12 +37,7 @@ class OnnxModel:
                 "Run `uv run python -m vision_serve.export_onnx` first."
             )
 
-        # Reuse torchvision's official preprocessing — same pipeline as PyTorch
-        # Model, so input tensors are identical across backends.
-        weights = ResNet18_Weights.DEFAULT
-        self.transform = weights.transforms()
-        self.categories: list[str] = list(weights.meta["categories"])
-
+        self.categories = _load_categories()
         self.session = ort.InferenceSession(str(model_path))
         self.input_name = self.session.get_inputs()[0].name
         self.output_name = self.session.get_outputs()[0].name
@@ -46,11 +47,9 @@ class OnnxModel:
 
         Same signature and output shape as `Model.predict`.
         """
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        tensor = self.transform(image).unsqueeze(0)
-        input_np = tensor.numpy()
+        input_array = preprocess(image_bytes)
 
-        logits = self.session.run([self.output_name], {self.input_name: input_np})[0]
+        logits = self.session.run([self.output_name], {self.input_name: input_array})[0]
 
         # Numerically stable softmax in NumPy.
         logits_row = logits[0]
