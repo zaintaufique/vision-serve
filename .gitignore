@@ -37,3 +37,6 @@ models/
 *accessKeys*.csv
 *.pem
 credentials
+
+# datasets
+data/
