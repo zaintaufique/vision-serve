@@ -33,3 +33,7 @@ models/
 *.pt
 *.pth
 *.safetensors
+# never commit credentials
+*accessKeys*.csv
+*.pem
+credentials
